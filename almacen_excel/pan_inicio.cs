@@ -1233,23 +1233,43 @@ namespace almacen_excel
                         {
                             string consulta = "select codigo,nombre,cant,almacen,idres,contrat,ida from tempo";
                             MySqlCommand micon = new MySqlCommand(consulta, cnx);
-                            MySqlDataReader dr = micon.ExecuteReader();
-                            if (dr.HasRows)
+                            //MySqlDataReader dr = micon.ExecuteReader();
+                            MySqlDataAdapter da = new MySqlDataAdapter(micon);      //
+                            DataTable dtt = new DataTable();                        //
+                            da.Fill(dtt);                                           // datatable del tempo
+                            //if (dr.HasRows)
+                            for(int y = 0; y < dtt.Rows.Count; y++)                 // for del tempo
                             {
-                                while (dr.Read())
+                                //while (dr.Read())
+                                DataRow row = dtt.Rows[y];                          // row del tempo
                                 {
-                                    // actualizamos el datagridview
-                                    for (int i = 0; i < advancedDataGridView1.Rows.Count; i++)
+                                    // actualizamos el datagridview / datatable y almloc
+                                    //for (int i = 0; i < advancedDataGridView1.Rows.Count; i++)
+                                    for (int i = 0; i < dt.Rows.Count; i++)         // for de la grilla
                                     {
-                                        if (advancedDataGridView1.Rows[i].Cells["id"].Value.ToString() == dr.GetString(6))
+                                        DataRow fila = dt.Rows[i];                  // row de la grilla
+                                        //if (advancedDataGridView1.Rows[i].Cells["id"].Value.ToString() == dr.GetString(6))
+                                        if (fila[1].ToString() == row[6].ToString())// comparacion de id's
                                         {
                                             //advancedDataGridView1.Rows[i].Cells["chkreserva"].Value = true;  // .Value = 1;
-                                            advancedDataGridView1.Rows[i].Cells["reserva"].Value = dr.GetString(4);
-                                            advancedDataGridView1.Rows[i].Cells["contrat"].Value = dr.GetString(5);
+                                            //advancedDataGridView1.Rows[i].Cells["reserva"].Value = dr.GetString(4);
+                                            //advancedDataGridView1.Rows[i].Cells["contrat"].Value = dr.GetString(5);
+                                            dt.Rows[i]["reserva"] = row[4].ToString();
+                                            dt.Rows[i]["contrat"] = row[5].ToString();
+                                            // actualizamos almloc
+                                            string actua = "update almloc set reserva=@res,contrat=@con,marca=0 where id=@idr";
+                                            MySqlCommand miact = new MySqlCommand(actua, cnx);
+                                            miact.Parameters.AddWithValue("@res", row[4].ToString());   // advancedDataGridView1.Rows[i].Cells["reserva"].Value.ToString());
+                                            miact.Parameters.AddWithValue("@con", row[5].ToString());   // advancedDataGridView1.Rows[i].Cells["contrat"].Value.ToString());
+                                            miact.Parameters.AddWithValue("@idr", row[6].ToString());   // advancedDataGridView1.Rows[i].Cells["id"].Value.ToString());
+                                            miact.ExecuteNonQuery();
+                                            //advancedDataGridView1.Rows[i].Cells["marca"].Value = 0;
+                                            dt.Rows[i]["marca"] = 0;
                                         }
                                     }
                                 }
                             }
+                            /*
                             dr.Close();
                             for (int i = 0; i < advancedDataGridView1.Rows.Count; i++)
                             {
@@ -1265,6 +1285,7 @@ namespace almacen_excel
                                     advancedDataGridView1.Rows[i].Cells["marca"].Value = 0;
                                 }
                             }
+                            */
                             consulta = "truncate tempo";
                             micon = new MySqlCommand(consulta, cnx);
                             micon.ExecuteNonQuery();

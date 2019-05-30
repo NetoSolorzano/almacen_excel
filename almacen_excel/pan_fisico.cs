@@ -633,7 +633,7 @@ namespace almacen_excel
                                 micon.Parameters.AddWithValue("@ev", ev);
                                 micon.Parameters.AddWithValue("@ad", ad);
                                 micon.Parameters.AddWithValue("@ct", ct);
-                                micon.Parameters.AddWithValue("@re", (re == " ")? 0:Int16.Parse(re));
+                                micon.Parameters.AddWithValue("@re", (re.Trim() == "")? 0:Int16.Parse(re));
                                 micon.ExecuteNonQuery();
                             }
                             catch (MySqlException ex)
