@@ -237,7 +237,6 @@ namespace almacen_excel
                 {
                     if (entreda() == true)
                     {
-                        //
                         retorno = true; // true = se efectuo la operacion
                     }
                 }
@@ -341,6 +340,14 @@ namespace almacen_excel
                     }
                     bien = true;
                 }
+                // actualizamos el estado del pedido
+                string proced = "estpedalm";
+                MySqlCommand conproc = new MySqlCommand(proced, cn);
+                conproc.CommandType = CommandType.StoredProcedure;
+                conproc.Parameters.AddWithValue("@pedido", tx_idped.Text.Trim());
+                conproc.Parameters.AddWithValue("@enuevo", MySqlDbType.String).Direction = ParameterDirection.Output;
+                conproc.ExecuteNonQuery();
+                cn.Close();
             }
             catch (MySqlException ex)
             {
